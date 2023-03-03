@@ -2,10 +2,15 @@ import React from 'react'
 import Image from "next/image";
 import { SearchIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import { HomeIcon } from "@heroicons/react/solid";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useRecoilState } from "recoil";
+import { modalState } from "../atom/modalAtom";
+
 
 const Header = () => {
-
-    const currentUser = true;
+    const {data: session} = useSession();
+    const [open, setOpen] = useRecoilState(modalState)
+    
 
     return (
         <div className="shadow-sm border-b sticky top-0 bg-white z-30">
@@ -32,17 +37,18 @@ const Header = () => {
 
                 <div className="flex space-x-4 items-center">
                     <HomeIcon className="hidden md:inline-flex  h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out"/>
-                    {currentUser ? (
+                    {session ? (
                         <>
-                            <PlusCircleIcon className="h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out"/>
+                            <PlusCircleIcon onClick={() => setOpen(true) } className="h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out"/>
                             <img
-                                src="https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png"
+                                onClick={signOut}
+                                src={session.user.image}
                                 alt="user-image"
                                 className="h-10 rounded-full cursor-pointer"
                             />
                         </>
                     ) : (
-                        <button>Sign in</button>
+                        <button onClick={signIn}>Sign in</button>
                     )}
                 </div>
             </div>
